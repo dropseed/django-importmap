@@ -18,6 +18,8 @@ class TestTemplate(TestCase):
 
         self.assertContains(response, "react@17.0.2/index.js")
 
+        self.assertContains(response, "/static/myjs.js")
+
     @override_settings(DEBUG=True)
     def test_template_output_dev(self):
         url = reverse("index")
@@ -29,6 +31,8 @@ class TestTemplate(TestCase):
         self.assertContains(response, "es-module-shims.js")
 
         self.assertContains(response, "react@17.0.2/dev.index.js")
+
+        self.assertContains(response, "/static/myjs.js")
 
     @override_settings(DEBUG=False)
     def test_jinja_template_output(self):
