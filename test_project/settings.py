@@ -67,6 +67,20 @@ TEMPLATES = [
             ],
         },
     },
+    {
+        "BACKEND": "django.template.backends.jinja2.Jinja2",
+        "DIRS": [Path(__file__).resolve().parent / "templates" / "jinja2"],
+        "APP_DIRS": False,
+        "OPTIONS": {
+            "extensions": ["importmap.jinja2.extension.ImportmapExtension"],
+            "context_processors": [
+                "django.template.context_processors.debug",
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
+            ],
+        },
+    },
 ]
 
 WSGI_APPLICATION = "wsgi.application"

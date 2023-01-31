@@ -138,6 +138,46 @@ When it renders you should get something like this:
 </html>
 ```
 
+## Using Jinja2
+
+To use django-importmap with Jinja2 templates, add the Jinja extension to your configuration. In the 
+Django project's `settings.py` it could look something like this:
+
+```python
+TEMPLATES = [
+    {
+        "BACKEND": "django.template.backends.jinja2.Jinja2",
+        ...
+        "OPTIONS": {
+            ...
+            "extensions": [
+              ...
+              "importmap.jinja2.extension.ImportmapExtension"
+            ],
+            ...
+        },
+    }
+]
+```
+
+Then in your Jinja templates add the `{% importmap_scripts %}` to insert the importmap `<script>` tag and shim:
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% importmap_scripts %}
+    <script type="module">
+        import React from "react"
+        console.log(React);
+    </script>
+</head>
+<body>
+
+</body>
+</html>
+```
+
 ## Project status
 
 This is partly an experiment,

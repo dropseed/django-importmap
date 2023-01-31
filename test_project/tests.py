@@ -31,3 +31,25 @@ class TestTemplate(TestCase):
         self.assertContains(response, "es-module-shims.js")
 
         self.assertContains(response, "react@17.0.2/dev.index.js")
+
+    def test_jinja_template_output(self):
+        settings.DEBUG = False
+
+        url = reverse("index_jinja")
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "es-module-shims.js")
+
+        self.assertContains(response, "react@17.0.2/index.js")
+
+    def test_jinja_template_output_dev(self):
+        settings.DEBUG = True
+
+        url = reverse("index_jinja")
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "es-module-shims.js")
+
+        self.assertContains(response, "react@17.0.2/dev.index.js")
