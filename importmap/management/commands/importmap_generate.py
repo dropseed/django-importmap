@@ -6,7 +6,9 @@ from ...core import Importmap
 class Command(BaseCommand):
     help = "Generate importmap.lock"
 
+    def add_arguments(self, parser):
+        parser.add_argument("--force", action="store_true")
+
     def handle(self, *args, **options):
         importmap = Importmap()
-        importmap.load()
-        # force option to make sure a new lock is updated? or trust the logic?
+        importmap.generate(force=options["force"])

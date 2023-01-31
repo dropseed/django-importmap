@@ -44,9 +44,7 @@ class Importmap:
     ):
         self.config_filename = config_filename
         self.lock_filename = lock_filename
-        self.config = {}
-        self.map = {}
-        self.map_dev = {}
+        self.load()
 
     def load(self):
         # TODO django check to compare lock and config hash
@@ -60,10 +58,18 @@ class Importmap:
             self.delete_lockfile()
             return
 
+        lockfile = self.load_lockfile()
+        if lockfile:
+            self.map = lockfile["importmap"]
+            self.map_dev = lockfile["importmap_dev"]
+        else:
+            self.map = {}
+            self.map_dev = {}
+
+    def generate(self, force=False):
         config_hash = hash_for_data(self.config)
         lockfile = self.load_lockfile()
-
-        if not lockfile or lockfile["config_hash"] != config_hash:
+        if force or not lockfile or lockfile["config_hash"] != config_hash:
             # Generate both maps now, tag will choose which to use at runtime
             self.map = self.generate_map()
             self.map_dev = self.generate_map(development=True)
@@ -72,11 +78,6 @@ class Importmap:
             lockfile["importmap"] = self.map
             lockfile["importmap_dev"] = self.map_dev
             self.save_lockfile(lockfile)
-
-        elif lockfile:
-            # Use map from up-to-date lockfile
-            self.map = lockfile["importmap"]
-            self.map_dev = lockfile["importmap_dev"]
 
     def load_config(self):
         # TODO raise custom exceptions
