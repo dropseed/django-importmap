@@ -48,6 +48,16 @@ class Importmap:
         self.map = {}
         self.map_dev = {}
 
+    @classmethod
+    def json(cls, development=False):
+        importmap = cls()
+        importmap.load()
+
+        if development:
+            return json.dumps(importmap.map_dev, indent=2, sort_keys=True)
+        else:
+            return json.dumps(importmap.map, sort_keys=True)
+
     def load(self):
         # TODO django check to compare lock and config hash
 

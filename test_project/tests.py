@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.test import Client, TestCase
+from django.test import Client, TestCase, override_settings
 from django.urls import reverse
 
 
@@ -7,9 +7,8 @@ class TestTemplate(TestCase):
     def setUp(self):
         self.client = Client()
 
+    @override_settings(DEBUG=False)
     def test_template_output(self):
-        settings.DEBUG = False
-
         url = reverse("index")
         response = self.client.get(url)
 
@@ -19,9 +18,8 @@ class TestTemplate(TestCase):
 
         self.assertContains(response, "react@17.0.2/index.js")
 
+    @override_settings(DEBUG=True)
     def test_template_output_dev(self):
-        settings.DEBUG = True
-
         url = reverse("index")
         response = self.client.get(url)
         # print(response.content.decode())
@@ -32,9 +30,8 @@ class TestTemplate(TestCase):
 
         self.assertContains(response, "react@17.0.2/dev.index.js")
 
+    @override_settings(DEBUG=False)
     def test_jinja_template_output(self):
-        settings.DEBUG = False
-
         url = reverse("index_jinja")
         response = self.client.get(url)
 
@@ -43,9 +40,8 @@ class TestTemplate(TestCase):
 
         self.assertContains(response, "react@17.0.2/index.js")
 
+    @override_settings(DEBUG=True)
     def test_jinja_template_output_dev(self):
-        settings.DEBUG = True
-
         url = reverse("index_jinja")
         response = self.client.get(url)
 
