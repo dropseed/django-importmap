@@ -7,7 +7,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
 
-    {% importmap_scripts %}
+    {% static "myjs.js" as myjs_static %}
+    {% importmap_scripts myjs=myjs_static %}
     <script type="module" src="{% static 'app.js' %}"></script>
 </head>
 <body>

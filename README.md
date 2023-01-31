@@ -138,6 +138,28 @@ When it renders you should get something like this:
 </html>
 ```
 
+## Adding static files to import maps
+
+You can include your own static files in the import map by passing kwargs to the `{% importmap_scripts %}` tag.
+You can actually use this to include any additional imports, but by using `{% static "name" as name_static %}` you can get the URL to the static file.
+
+```html
+{% load importmap static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% static "my-script.js" as my_script_static %}
+    {% importmap_scripts myscript=my_script_static %}
+    <script type="module">
+        import MyScript from "myscript"
+    </script>
+</head>
+<body>
+
+</body>
+</html>
+```
+
 ## Using Jinja2
 
 To use django-importmap with Jinja2 templates,
@@ -190,6 +212,29 @@ Then in your Jinja templates you can include a module shim and output the `impor
 
 </body>
 </html>
+```
+
+To include your own static files in the import map,
+you can pass a dictionary of names and URLs to the `Importmap.json` method:
+
+```python
+from django.conf import settings
+from django.templatetags.static import static
+from jinja2 import Environment
+
+from importmap import Importmap
+
+
+def environment(**options):
+    env = Environment(**options)
+    env.globals.update(
+        {
+            "importmap": Importmap.json(
+                development=settings.DEBUG, extra_imports={"myjs": static("myjs.js")}
+            )
+        }
+    )
+    return env
 ```
 
 ## Project status
