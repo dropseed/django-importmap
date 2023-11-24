@@ -27,8 +27,7 @@ classifiers = [
 
 [tool.poetry.dependencies]
 python = "^3.8"
-tomli = "*"
-marshmallow = "^3.14.1"
+tomli = {version = "*", markers = "python_version < '3.12'"}
 requests = "*"
 
 [tool.poetry.dev-dependencies]

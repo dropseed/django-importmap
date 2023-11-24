@@ -2,34 +2,20 @@ import hashlib
 import json
 import logging
 import os
+from pathlib import Path
 
-import tomli
-from marshmallow import Schema, fields
+try:
+    import tomllib
+except ImportError:
+    import tomli as tomllib
 
 from .generator import ImportmapGenerator
 
 logger = logging.getLogger(__name__)
 
 
-DEFAULT_CONFIG_FILENAME = "importmap.toml"
+DEFAULT_CONFIG_FILENAME = "pyproject.toml"
 DEFAULT_LOCK_FILENAME = "importmap.lock"
-
-
-class PackageSchema(Schema):
-    name = fields.String(required=True)
-    source = fields.String(required=True)
-    # preload
-    # vendor, or vendor all is one option?
-
-
-class ConfigSchema(Schema):
-    packages = fields.List(fields.Nested(PackageSchema), required=True)
-
-
-class LockfileSchema(Schema):
-    config_hash = fields.String(required=True)
-    importmap = fields.Dict(required=True)
-    importmap_dev = fields.Dict(required=True)
 
 
 def hash_for_data(data):
@@ -42,8 +28,8 @@ class Importmap:
         config_filename=DEFAULT_CONFIG_FILENAME,
         lock_filename=DEFAULT_LOCK_FILENAME,
     ):
-        self.config_filename = config_filename
-        self.lock_filename = lock_filename
+        self.config_file = Path(config_filename)
+        self.lock_file = Path(lock_filename)
         self.load()
 
     @classmethod
@@ -70,7 +56,7 @@ class Importmap:
             # No config = no map and no lockfile
             self.map = {}
             self.map_dev = {}
-            self.delete_lockfile()
+            self.lock_file.unlink(missing_ok=True)
             return
 
         lockfile = self.load_lockfile()
@@ -95,34 +81,23 @@ class Importmap:
             self.save_lockfile(lockfile)
 
     def load_config(self):
-        # TODO raise custom exceptions
-
-        if not os.path.exists(self.config_filename):
-            logger.warning(f"{self.config_filename} not found")
+        if not self.config_file.exists():
             return {}
+        with self.config_file.open("rb") as f:
+            pyproject = tomllib.load(f)
 
-        with open(self.config_filename, "r") as f:
-            # why doesn't tomli.load(f) work?
-            toml_data = tomli.loads(f.read())
-
-        return ConfigSchema().load(toml_data)
+        return pyproject["tool"]["importmap"]
 
     def load_lockfile(self):
-        if not os.path.exists(self.lock_filename):
+        if not self.lock_file.exists():
             return {}
 
-        with open(self.lock_filename, "r") as f:
-            json_data = json.load(f)
-
-        return LockfileSchema().load(json_data)
+        with self.lock_file.open("r") as f:
+            return json.load(f)
 
     def save_lockfile(self, lockfile):
-        with open(self.lock_filename, "w+") as f:
+        with self.lock_file.open("w+") as f:
             json.dump(lockfile, f, indent=2, sort_keys=True)
-
-    def delete_lockfile(self):
-        if os.path.exists(self.lock_filename):
-            os.remove(self.lock_filename)
 
     def generate_map(self, *args, **kwargs):
         return ImportmapGenerator.from_config(self.config, *args, **kwargs).generate()

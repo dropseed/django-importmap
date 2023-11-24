@@ -17,12 +17,11 @@ class ImportmapGenerator:
 
     @classmethod
     def from_config(cls, config, *args, **kwargs):
-        targets = []
-
-        for map in config["packages"]:
-            targets.append(map["source"])
-
-        return cls(targets, *args, **kwargs)
+        return cls(
+            [f"{package}@{version}" for package, version in config["dependencies"].items()],
+            *args,
+            **kwargs,
+        )
 
     def get_env(self):
         if self.development:

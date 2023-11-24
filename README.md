@@ -31,20 +31,22 @@ INSTALLED_APPS = [
 ]
 ```
 
-### 2. Create an `importmap.toml` file
+### 2. Configuring an import map
 
-This should live next to your `manage.py` file.
-Here you'll add a list of "packages" you want to use.
+You JavaScript dependencies are conveniently located in your`pyproject.toml` file.
 
-The "name" can be anything, but should probably be the same as what it you would import from in typical bundling setups (i.e. `import React from "react"`).
-
-The "source" will get passed on to the [jspm.org generator](https://jspm.org/docs/api#install), but is basically the `<npm package>@<version>` you want to use.
+They are listed under `[tool.importmap.dependencies]` and you can add them there. The format is `name = "version"`,
+similar to how you would add a dependency to your `package.json` file.
 
 ```toml
-[[packages]]
-name = "react"
-source = "react@17.0.2"
+# pyproject.toml
+[tool.importmap.dependencies]
+react = "17.0.2"
+react-dom = "17.0.2"
 ```
+
+[jspm.org generator](https://jspm.org/docs/api#install) is used lock and serve the dependencies,
+but is basically just like installing them via `npm i <npm package>@<version>`.
 
 ### 3. Run `importmap_generate`
 
