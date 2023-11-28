@@ -20,3 +20,4 @@ jobs:
         publish_cmd: |
           pip3 install -U pip poetry && poetry publish --build --no-interaction
         github_token: ${{ secrets.GITHUB_TOKEN }}
+        release_notes: generate
