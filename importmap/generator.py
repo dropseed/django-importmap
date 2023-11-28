@@ -18,7 +18,10 @@ class ImportmapGenerator:
     @classmethod
     def from_config(cls, config, *args, **kwargs):
         return cls(
-            [f"{package}@{version}" for package, version in config["dependencies"].items()],
+            [
+                f"{package}@{version}"
+                for package, version in config["dependencies"].items()
+            ],
             *args,
             **kwargs,
         )
