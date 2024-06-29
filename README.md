@@ -239,6 +239,61 @@ def environment(**options):
     return env
 ```
 
+If you want to import modules from a directory recursively, you can try this approach. 
+
+```python
+from django.conf import settings
+from django.templatetags.static import static
+from jinja2 import Environment
+
+from importmap import Importmap
+
+
+class ImportArguments(TypedDict):
+    under: str
+    to: str
+
+
+def import_recursive(**kwargs: Unpack[ImportArguments]):
+    root_dir = settings.BASE_DIR
+    source_dir: str = str(root_dir / kwargs['under'])
+    source_files = glob(f"{source_dir}/**/*.js", recursive=True)
+
+    importmap_dict = {}
+    for source_file in source_files:
+        source_module = source_file.split('static/')[-1]
+        target_module = source_module.replace(source_dir, kwargs['to']).replace(".js", "")
+
+        importmap_dict[target_module] = static(source_module)
+
+    return importmap_dict
+
+
+def environment(**options):
+    env = Environment(**options)
+    env.globals.update(
+        {
+            "importmap": Importmap.json(
+                development=settings.DEBUG, 
+                extra_imports={
+                    "myjs": static("myjs.js"),
+                    **import_recursive(
+                        under="foo/static/foo",
+                        to="foo"
+                    ),
+                    **import_recursive(
+                        under="bar/static/bar",
+                        to="bar"
+                    ),
+
+                }
+            )
+        }
+    )
+    return env
+```
+
+
 ## Project status
 
 This is partly an experiment,
