@@ -36,7 +36,7 @@ class ImportmapGenerator:
         response = requests.post(
             "https://api.jspm.io/generate",
             json={
-                "install": [self.targets],
+                "install": self.targets,
                 "env": self.get_env(),
                 "provider": self.provider,
             },
