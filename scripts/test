@@ -1,3 +1,5 @@
 #!/bin/sh -e
+.venv/bin/poetry run pytest
+
 cd test_project
 ../.venv/bin/python manage.py test "$@"
