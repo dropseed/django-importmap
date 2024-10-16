@@ -1,3 +1,7 @@
+> [!IMPORTANT]
+> Development on this package has moved to [Plain](https://plainframework.com?ref=django-importmap) and will continue there.
+> Existing releases will remain published and I encourage you to fork this repo if you need to make changes.
+
 # django-importmap
 
 Heavily inspired by [rails/importmap-rails](https://github.com/rails/importmap-rails),
